@@ -79,11 +79,13 @@ const nombresCategorias = Object.keys(categorias);
       >
         <option value="">Seleccione...</option>
 
-        {nombresCategorias.map((categoria) => (
+        {
+        nombresCategorias.map((categoria) => (
           <option value={categoria}>
             {categoria}
           </option>
-        ))}
+        ))
+        }
       </select>
     </div>
 

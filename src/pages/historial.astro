@@ -1,7 +1,16 @@
 ---
 import Layaout from "../layouts/Layout.astro";
 
+const base = Astro.url.origin;
+const productosRes = await fetch(`${base}/api/productos`)
 
+if (!productosRes.ok) {
+	throw new Error("error en prodcutos");
+}
+const productos = await productosRes.json()
+
+
+const categorias = [...new Set(productos.map(item => item.categoria))]
 ---
 <Layaout>
     
@@ -64,10 +73,14 @@ import Layaout from "../layouts/Layout.astro";
         </label>
 
         <select name="categoria" id="categoria">
-          <option value="pollo">pollo</option>
-          <option value="cerdo">cerdo</option>
-          <option value="limpieza">limpieza</option>
-          <option value="achura">achura</option>
+          {
+            categorias.map((element) => (
+              <option value={element}>
+                {element}
+              </option>
+            ))
+          }
+
         </select>
       </div>
 

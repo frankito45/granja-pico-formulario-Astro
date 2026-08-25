@@ -1,4 +1,7 @@
 ---
+const {categorias} = Astro.props
+
+
 ---
 
 <div class="min-h-screen bg-gray-100 p-4">
@@ -34,10 +37,13 @@
       id="categoria"
       class="w-full border rounded-lg p-3 mb-4"
     >
-      <option value="pollo">Pollo</option>
-      <option value="cerdo">Cerdo</option>
-      <option value="achura">Achura</option>
-      <option value="limpieza">Limpieza</option>
+    {
+            categorias.map((element) => (
+              <option value={element}>
+                {element}
+              </option>
+            ))
+    }
     </select>
 
     <button

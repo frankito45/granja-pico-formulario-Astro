@@ -3,8 +3,20 @@
 import Registro from "../components/registro.astro";
 import Layaout from "../layouts/Layout.astro";
 
+
+const base = Astro.url.origin;
+const productosRes = await fetch(`${base}/api/productos`)
+
+if (!productosRes.ok) {
+	throw new Error("error en prodcutos");
+}
+const productos = await productosRes.json()
+
+
+const categorias = [...new Set(productos.map(item => item.categoria))]
+
 ---
 
 <Layaout>
-    <Registro></Registro>
+    <Registro categorias={categorias}></Registro>
 </Layaout>

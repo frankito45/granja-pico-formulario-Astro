@@ -15,6 +15,9 @@ const [productosRes, localesRes, estadosRes] = await Promise.all([
   fetch(`${base}/api/local`),
   fetch(`${base}/api/estados`),
 ]);
+console.log("PRODUCTOS:", productosRes.status, productosRes.statusText);
+console.log("LOCALES:", localesRes.status, localesRes.statusText);
+console.log("ESTADOS:", estadosRes.status, estadosRes.statusText);
 
 if (!productosRes.ok) {
 	throw new Error("error en prodcutos");
