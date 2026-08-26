@@ -2,7 +2,7 @@
 
 import Registro from "../components/registro.astro";
 import Layaout from "../layouts/Layout.astro";
-
+export const prerender = false;
 
 const base = Astro.url.origin;
 const productosRes = await fetch(`${base}/api/productos`)

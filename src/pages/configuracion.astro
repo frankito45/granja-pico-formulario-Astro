@@ -1,6 +1,9 @@
 ---
-import { negative, optional, set } from "astro:schema";
+export const prerender = false;
+
+
 import Layout from "../layouts/Layout.astro";
+
 
 const base = Astro.url.origin;
 const productosRes = await fetch(`${base}/api/productos`)
