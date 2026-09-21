@@ -2,6 +2,7 @@
 export const prerender = false;
 
 
+import { map, optional } from "astro:schema";
 import Layout from "../layouts/Layout.astro";
 
 
@@ -41,7 +42,7 @@ console.log(categorias)
       <div id="listaMermas" class="space-y-3 hidden"></div>
     </div>
 
-<div id="contentCreateProdcucto" class="bg-white rounded-xl shadow-md p-4 border border-gray-200">
+<div id="contentCreateProducto" class="bg-white rounded-xl shadow-md p-4 border border-gray-200">
 
   <h1 class="mb-4 text-2xl font-bold text-gray-800">
     Crear Producto
@@ -131,6 +132,59 @@ console.log(categorias)
 
 </div>
 
+
+
+
+<div
+  id="contentEliminarProducto"
+  class="bg-white rounded-xl shadow-md p-4 border border-gray-200"
+  data-productos={JSON.stringify(productos)}
+>
+  <h1 class="mb-4 text-2xl font-bold text-gray-800">
+    Eliminar Producto
+  </h1>
+
+  <div class="space-y-4">
+
+    <!-- Seleccionar categoría -->
+    <div class="space-y-2">
+      <label
+        for="categoria-Eliminar"
+        class="block text-sm font-semibold text-gray-700"
+      >
+        Seleccione una categoría
+      </label>
+
+      <select
+        id="categoria-Eliminar"
+        class="w-full rounded-lg border border-gray-300 bg-white p-3 text-gray-700"
+      >
+        <option value="">
+          Seleccione una categoría
+        </option>
+
+        {
+          categorias.map((element) => (
+            <option value={element}>
+              {element}
+            </option>
+          ))
+        }
+      </select>
+    </div>
+
+    <!-- Lista de productos -->
+    <div
+      id="listaProductos"
+      class="space-y-3"
+    >
+    </div>
+
+  </div>
+</div>
+
+
+
     
   </div>
 </Layout>
@@ -141,7 +195,7 @@ console.log(categorias)
   ) as HTMLDivElement;
 
   const newProdcucto = document.getElementById(
-    "contentCreateProdcucto"
+    "contentCreateProducto"
   ) as HTMLDivElement;
 
   const listaMerma = document.getElementById(
@@ -151,7 +205,6 @@ console.log(categorias)
   const Productonew = document.getElementById(
     "crearProductos"
   ) as HTMLDivElement;
-
 
   // =========================
   // MOSTRAR / OCULTAR MERMAS
@@ -172,117 +225,7 @@ console.log(categorias)
   });
 
 
-  // =========================
-  // CATEGORÍA
-  // =========================
-
-  const categoriaSelect = document.getElementById(
-    "categoria"
-  ) as HTMLSelectElement;
-
-  const inputNuevaCategoria = document.getElementById(
-    "inputNuevaCategoria"
-  ) as HTMLDivElement;
-
-  const nuevaCategoria = document.getElementById(
-    "nuevaCategoria"
-  ) as HTMLInputElement;
-
-
-  // Mostrar / ocultar input de nueva categoría
-
-  categoriaSelect.addEventListener("change", () => {
-    inputNuevaCategoria.classList.toggle(
-      "hidden",
-      categoriaSelect.value !== "nueva"
-    );
-  });
-
-
-  // =========================
-  // CREAR PRODUCTO
-  // =========================
-
-  const formCrearProducto = document.getElementById(
-    "formCrearProducto"
-  ) as HTMLFormElement;
-
-  const nombreProducto = document.getElementById(
-    "nombreProducto"
-  ) as HTMLInputElement;
-
-
-  formCrearProducto.addEventListener("submit", async (e) => {
-    e.preventDefault();
-
-    // Obtener nombre
-    const nombre = nombreProducto.value.trim();
-
-    // Obtener categoría
-    let categoria = categoriaSelect.value;
-
-    // Si seleccionó "nueva",
-    // usamos lo escrito en el input
-    if (categoria === "nueva") {
-      categoria = nuevaCategoria.value.trim();
-    }
-
-
-    // Validar
-    if (!nombre) {
-      alert("Ingrese el nombre del producto");
-      return;
-    }
-
-    if (!categoria) {
-      alert("Seleccione o ingrese una categoría");
-      return;
-    }
-
-
-    try {
-      const response = await fetch("/api/productos", {
-        method: "POST",
-
-        headers: {
-          "Content-Type": "application/json",
-        },
-
-        body: JSON.stringify({
-          nombre,
-          categoria,
-        }),
-      });
-
-
-      const data = await response.json();
-
-
-      if (!response.ok) {
-        alert(data.error || "Error al crear el producto");
-        return;
-      }
-
-
-      alert("Producto creado correctamente");
-
-
-      // Limpiar formulario
-
-      formCrearProducto.reset();
-
-      // Ocultar input de nueva categoría
-
-      inputNuevaCategoria.classList.add("hidden");
-
-
-    } catch (error) {
-      console.error(error);
-
-      alert("Error de conexión con el servidor");
-    }
-  });
-
+ 
 
   // =========================
   // CARGAR MERMAS
@@ -380,36 +323,11 @@ console.log(categorias)
   }
 
 
-  // =========================
-  // MOSTRAR / OCULTAR
-  // FORMULARIO PRODUCTO
-  // =========================
-
-  function toggleCrearProdcuto() {
-
-    newProdcucto?.addEventListener("click", (e) => {
-
-      const target = e.target as HTMLElement;
-
-      const cardProdcut = target.closest("#crearProductos");
-
-      if (cardProdcut) {
-        return;
-      }
-
-      const result = Productonew.classList.toggle("hidden");
-
-      Productonew.classList.toggle("active", result);
-    });
-  }
-
-
-  toggleCrearProdcuto();
-
-
-  // =========================
-  // INICIAR
-  // =========================
 
   cargarMermas();
 </script>
+
+<script src="../script/crearProductos"></script>
+
+
+<script src="../script/eliminarProducto"></script>

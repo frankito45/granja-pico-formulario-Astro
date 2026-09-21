@@ -31,7 +31,8 @@ export async function actualizarMovimientos(id:number ,cantidad:number, estado:n
     estado_id: Number(estado),
   }),
  });
-   if (!response.ok) {
+
+  if (!response.ok) {
     throw new Error("No se pudo actualizar");
   }
 

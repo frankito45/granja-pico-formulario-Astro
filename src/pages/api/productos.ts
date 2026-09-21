@@ -4,6 +4,7 @@ import { supabase } from "../../lib/supabase";
 import type { Producto } from "../../models/productos";
 
 
+
 export const prerender = false
 
 export const GET:APIRoute = async () => {
@@ -72,4 +73,36 @@ export const POST:APIRoute = async ({request}) => {
         )
     }
 
+}
+
+export const DELETE:APIRoute = async({request}) => {
+    try{
+
+        const data = await request.json()
+        console.log(data)
+        const {id} = data 
+        if (isNaN(id)) {
+            return Response.json({
+                success:false,
+                error: 'Faltan seleccionar un producto'
+
+            }, {status:404})
+            
+        }
+
+        
+        const {error} = await supabase.from('productos').delete().eq("id",Number(id))
+
+        return Response.json({
+            success:true,
+            message:"producto eliminado"
+        },{status:200})
+
+
+    }catch(error){
+        return Response.json({
+            success:false,
+            error: "Error al eliminar los datos"
+        },{status:500})
+    }
 }

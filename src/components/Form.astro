@@ -12,18 +12,6 @@ const nombresCategorias = Object.keys(categorias);
 
   <form id="formulario" class="space-y-4">
 
-    <!-- Fecha -->
-    <div>
-      <label class="mb-1 block text-sm font-medium">
-        Fecha
-      </label>
-
-      <input
-        type="date"
-        name="fecha"
-        class="w-full rounded-lg border border-gray-300 p-3"
-      />
-    </div>
 
     <!-- Local -->
     <div>
@@ -174,6 +162,7 @@ const nombresCategorias = Object.keys(categorias);
 
 <script define:vars={{ categorias }}>
 
+
 const categoria = document.getElementById("categoria");
 const estado = document.getElementById("estado");
 const contenedor = document.getElementById("productos");
@@ -281,9 +270,18 @@ formulario.addEventListener("submit", async (e) => {
 
   const formData = new FormData(formulario);
 
+  const hoy = new Date();
+
+  const fecha =
+    hoy.getFullYear() +
+    "-" +
+    String(hoy.getMonth() + 1).padStart(2, "0") +
+    "-" +
+    String(hoy.getDate()).padStart(2, "0");
+
   const datos = {
 
-    fecha: formData.get("fecha"),
+    fecha,
 
     local_id: Number(formData.get("local")),
 

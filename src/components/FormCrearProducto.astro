@@ -1,0 +1,101 @@
+---
+
+
+const { categorias} = Astro.props
+
+
+---
+
+
+
+<div id="contentCreateProdcucto" class="bg-white rounded-xl shadow-md p-4 border border-gray-200">
+
+  <h1 class="mb-4 text-2xl font-bold text-gray-800">
+    Crear Producto
+  </h1>
+
+  <div id="crearProductos" class="space-y-3">
+
+    <form id="formCrearProducto" class="mt-4 space-y-5">
+
+      <!-- Categoría -->
+      <div class="space-y-2">
+        <label
+          for="categoria"
+          class="block text-sm font-semibold text-gray-700"
+        >
+          Categoría
+        </label>
+
+        <select
+          name="categoria"
+          id="categoria"
+          class="w-full rounded-lg border border-gray-300 bg-white p-3 text-gray-700"
+        >
+          {
+            categorias.map((element:string) => (
+              <option value={element}>
+                {element}
+              </option>
+            ))
+          }
+
+          <option value="nueva">
+            + Nueva categoría
+          </option>
+        </select>
+      </div>
+
+      <!-- Nueva categoría -->
+      <div
+        id="inputNuevaCategoria"
+        class="hidden space-y-2"
+      >
+        <label
+          for="nuevaCategoria"
+          class="block text-sm font-semibold text-gray-700"
+        >
+          Nombre de la nueva categoría
+        </label>
+
+        <input
+          id="nuevaCategoria"
+          name="nuevaCategoria"
+          type="text"
+          placeholder="Ej: Bebidas"
+          class="w-full rounded-lg border border-gray-300 p-3"
+        />
+      </div>
+
+      <!-- Producto -->
+      <div class="space-y-2">
+        <label
+          for="nombreProducto"
+          class="block text-sm font-semibold text-gray-700"
+        >
+          Nombre del producto
+        </label>
+
+        <input
+          id="nombreProducto"
+          name="nombre"
+          type="text"
+          placeholder="Ej: Coca Cola"
+          class="w-full rounded-lg border border-gray-300 p-3"
+        />
+      </div>
+
+      <button
+        type="submit"
+        class="w-full rounded-lg bg-blue-600 px-4 py-3 font-semibold text-white"
+      >
+        Crear producto
+      </button>
+
+    </form>
+
+</div>
+
+
+
+<script src="../script/crearProductos"></script>
