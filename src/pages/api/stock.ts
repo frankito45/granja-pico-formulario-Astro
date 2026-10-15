@@ -97,7 +97,9 @@ export const POST: APIRoute = async ({ request }) => {
 // src/pages/api/stock.ts
 import type { Registro } from "../../models/registro";
 
+
 export const GET: APIRoute = async ({ url }) => {
+
   const fecha = url.searchParams.get("fecha");
   const local = url.searchParams.get("local");
   const categoria = url.searchParams.get("categoria");
@@ -109,8 +111,8 @@ export const GET: APIRoute = async ({ url }) => {
     );
   }
 
-const desde = `${fecha}T00:00:00-03:00`;
-const hasta = `${fecha}T23:59:59-03:00`;
+  const desde = `${fecha}T00:00:00-03:00`;
+  const hasta = `${fecha}T23:59:59-03:00`;
 
   const { data, error } = await supabase
     .from("movimientos_stock")
@@ -137,6 +139,32 @@ const hasta = `${fecha}T23:59:59-03:00`;
     );
   }
 
+  const { data:promedio } = await supabase
+    .from("movimientos_stock")
+    .select(`
+      cantidad,
+      productos!inner(
+        id,
+        nombre,
+        categoria
+      ),
+      estados!inner(
+        nombre
+      )
+    `)
+    .eq("local_id", 1)
+    .eq("productos.categoria", "pollo")
+    .eq("producto_id",30)
+    .eq("estados.nombre","produccion")
+    .gte("fecha", desde)
+    .lte("fecha", hasta) as { data: Registro[] | null, error: any };
+    if (error) {
+    return Response.json(
+      { error: error.message },
+      { status: 500 }
+    );
+  }
+
   const { data: mermas } = await supabase
     .from("mermas")
     .select("producto_id, merma");
@@ -155,34 +183,56 @@ const hasta = `${fecha}T23:59:59-03:00`;
   if (!data) {
     throw new Error("error al traer la consulta");
   }
+
+  var aux = 0
+  if(promedio){
+    aux = Number(promedio[0].cantidad)
+  }
   
   for (const mov of data) {
     const producto = mov.productos.nombre;
     const producto_id = mov.productos.id;
     const estado = mov.estados.nombre;
     const cantidad = Number(mov.cantidad);
+    const promedio = aux 
 
-if (!resumen[producto]) {
-  resumen[producto] = {
-    producto,
-    producto_id,
-    categoria: mov.productos.categoria,
-    merma: mapaMermas.get(producto_id) ?? 0,
-    inicio: 0,
-    ingreso: 0,
-    produccion: 0,
-    envio: 0,
-    devolucion: 0,
-    consumo:0,
-    final: 0,
-    ventas: 0,
-  };
-}
 
+    if (!resumen[producto]) {
+      resumen[producto] = {
+        producto,
+        producto_id,
+        categoria: mov.productos.categoria,
+        merma: mapaMermas.get(producto_id) ?? 0,
+        inicio: 0,
+        ingreso: 0,
+        produccion: 0,
+        envio: 0,
+        devolucion: 0,
+        consumo:0,
+        final: 0,
+        ventas: 0,
+        sacarPromedio: promedio,
+        promedio :0
+      };
+
+
+    }
+
+    // suma la cantidad a su respectivo estado 
     if (estado in resumen[producto]) {
       resumen[producto][estado] += cantidad;
     }
+
+
+    
   }
+  console.log(resumen);
+
+console.log("---------");
+  
+
+
+  
 
 Object.values(resumen).forEach((item: any) => {
 
@@ -194,6 +244,11 @@ Object.values(resumen).forEach((item: any) => {
   item.produccion_mostrada =
     Number((item.produccion * factor).toFixed(2));
 
+  if(item.sacarPromedio > 0){
+    
+    item.promedio = Number((item.produccion / item.sacarPromedio).toFixed(3))
+  }
+
   item.ventas =
     item.inicio +
     item.ingreso_mostrado +
@@ -204,6 +259,11 @@ Object.values(resumen).forEach((item: any) => {
     item.final;
 
 });
+
+console.log("---------");
+console.log(resumen);
+
+
 
 
 const productosIds = Object.values(resumen).map(

@@ -23,8 +23,10 @@ buscar.addEventListener('click', async () => {
     return;
   }
 
+
+
   data.forEach((item:any) => {
-  
+
 
     if (item.categoria === 'limpieza') {
 
@@ -62,10 +64,138 @@ buscar.addEventListener('click', async () => {
         </div>
       `;
 
-    } else {
+    }
+
+    else if (item.producto === 'Suprema'){
+      resultado.innerHTML += `
+      <div class="relative bg-white rounded-xl shadow p-4">
+
+      <div class="absolute top-4 right-4 text-right">
+        <div class="text-xs text-gray-500">Promedio</div>
+        <span class="font-bold text-blue-600">
+          ${(item.promedio ?? 0).toFixed(3)}
+        </span>
+      </div>
+        
+
+        <h2 class="text-xl font-bold mb-3">
+          ${item.producto}
+        </h2>
+
+        <div class="grid grid-cols-2 gap-2 text-sm">
+
+          <div>Inicio:</div>
+          <div>${item.inicio}</div>
+
+          <div>Ingresos:</div>
+          <div>
+            ${item.ingreso_mostrado}
+            ${item.merma > 0
+              ? `<span class="text-xs text-gray-500">(${item.ingreso})</span>`
+              : ''}
+          </div>
+
+          <div>Producción:</div>
+          <div>
+            ${item.produccion_mostrada}
+            ${item.merma > 0
+              ? `<span class="text-xs text-gray-500">(${item.produccion})</span>`
+              : ''}
+          </div>
+
+          <div>Consumido para mila:</div>
+          <div>${item.consumo}</div>
+
+          <div>Envíos:</div>
+          <div>${item.envio}</div>
+
+          <div>Devoluciones:</div>
+          <div>${item.devolucion}</div>
+
+          <div class="font-bold">
+            Final
+          </div>
+
+          <div class="font-bold">
+            ${item.final}
+          </div>
+
+          ${
+            item.merma > 0
+              ? `
+                <div class="font-bold text-orange-600">
+                  Merma
+                </div>
+
+                <div class="font-bold text-orange-600">
+                  ${item.merma}%
+                </div>
+              `
+              : ''
+          }
+
+          <div class="font-bold text-green-600">
+            Consumido
+          </div>
+
+          <div class="font-bold text-green-600">
+            ${item.ventas.toFixed(2)}
+          </div>
+
+          <div class="font-bold">
+            Fudo
+          </div>
+
+          <div>
+            <input
+              type="number"
+              value="${item.fudo ?? 0}"
+              data-producto="${item.producto_id}"
+              data-consumido="${item.ventas}"
+              class="fudo w-full rounded-lg border border-gray-300 p-2"
+            />
+          </div>
+
+          <button
+            class="guardar rounded-lg bg-green-600 px-4 py-2 font-medium text-white active:scale-95"
+            data-producto="${item.producto_id}"
+          >
+            Guardar
+          </button>
+          <div class="">
+          
+<div class="flex flex-col gap-1">
+  <div class="font-bold">
+    Diferencia
+  </div>
+
+  <div class="font-bold diferencia ${
+    ((item.fudo ?? 0) - item.ventas) >= 0
+      ? "text-green-600"
+      : "text-red-600"
+  }">
+    ${((item.fudo ?? 0) - item.ventas).toFixed(2)}
+  </div>
+</div>
+
+
+        </div>
+
+      </div>
+      `;
+    }
+    
+    else {
 
       resultado.innerHTML += `
-      <div class="bg-white rounded-xl shadow p-4">
+      <div class="relative bg-white rounded-xl shadow p-4">
+
+      <div class="absolute top-4 right-4 text-right">
+        <div class="text-xs text-gray-500">Promedio</div>
+        <span class="font-bold text-blue-600">
+          ${(item.promedio ?? 0).toFixed(3)}
+        </span>
+      </div>
 
         <h2 class="text-xl font-bold mb-3">
           ${item.producto}
