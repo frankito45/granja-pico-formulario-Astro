@@ -17,7 +17,7 @@ type MovimientoRequest = {
 export const POST: APIRoute = async ({ request }) => {
   try {
     const data = await request.json() as MovimientoRequest
-    console.log('datos0',data)
+
 
     const {fecha,local_id,estado_id,productos} = data
    
@@ -138,8 +138,8 @@ export const GET: APIRoute = async ({ url }) => {
       { status: 500 }
     );
   }
-
-  const { data:promedio } = await supabase
+  // saca de produccion los cajones usados
+  const { data:promedio,error:errorPromedio } = await supabase
     .from("movimientos_stock")
     .select(`
       cantidad,
@@ -160,10 +160,41 @@ export const GET: APIRoute = async ({ url }) => {
     .lte("fecha", hasta) as { data: Registro[] | null, error: any };
     if (error) {
     return Response.json(
+
       { error: error.message },
       { status: 500 }
+
     );
   }
+
+  const consumoCajonesTotal =
+  (promedio ?? []).reduce(
+    (acc, item) => acc + Number(item.cantidad),
+    0
+  );
+
+
+const { data: consumoSuprema, error: errorConsumoSuprema } = await supabase
+  .from("movimientos_stock")
+  .select(`
+    cantidad,
+    productos!inner(id, nombre),
+    estados!inner(nombre)
+  `)
+  .eq("local_id", Number(local))
+  .eq("producto_id", 3) // Suprema
+  .eq("estados.nombre", "consumo")
+  .gte("fecha", desde)
+  .lte("fecha", hasta);
+
+
+  const consumoSupremaTotal =
+  (consumoSuprema ?? []).reduce(
+    (acc, item) => acc + Number(item.cantidad),
+    0
+  );
+
+
 
   const { data: mermas } = await supabase
     .from("mermas")
@@ -184,19 +215,13 @@ export const GET: APIRoute = async ({ url }) => {
     throw new Error("error al traer la consulta");
   }
 
-  var aux = 0
-  if(promedio){
-    aux = Number(promedio[0].cantidad)
-  }
   
   for (const mov of data) {
     const producto = mov.productos.nombre;
     const producto_id = mov.productos.id;
     const estado = mov.estados.nombre;
     const cantidad = Number(mov.cantidad);
-    const promedio = aux 
-
-
+    
     if (!resumen[producto]) {
       resumen[producto] = {
         producto,
@@ -211,7 +236,6 @@ export const GET: APIRoute = async ({ url }) => {
         consumo:0,
         final: 0,
         ventas: 0,
-        sacarPromedio: promedio,
         promedio :0
       };
 
@@ -220,21 +244,20 @@ export const GET: APIRoute = async ({ url }) => {
 
     // suma la cantidad a su respectivo estado 
     if (estado in resumen[producto]) {
-      resumen[producto][estado] += cantidad;
+      
+      resumen[producto][estado] += cantidad
     }
-
-
     
   }
-  console.log(resumen);
 
-console.log("---------");
-  
 
 
   
 
 Object.values(resumen).forEach((item: any) => {
+
+  console.log(item.productos);
+  
 
   const factor = 1 - item.merma / 100;
 
@@ -243,11 +266,19 @@ Object.values(resumen).forEach((item: any) => {
 
   item.produccion_mostrada =
     Number((item.produccion * factor).toFixed(2));
+  
 
-  if(item.sacarPromedio > 0){
-    
-    item.promedio = Number((item.produccion / item.sacarPromedio).toFixed(3))
+if ( item.categoria === "pollo") {
+  if ( item.producto_id === 5) {
+    item.promedio = Number((item.produccion / (consumoSupremaTotal / 10)).toFixed(3));
   }
+  else{
+
+    item.promedio = Number((item.produccion / consumoCajonesTotal).toFixed(3));
+  }
+}
+
+
 
   item.ventas =
     item.inicio +
@@ -260,8 +291,7 @@ Object.values(resumen).forEach((item: any) => {
 
 });
 
-console.log("---------");
-console.log(resumen);
+
 
 
 

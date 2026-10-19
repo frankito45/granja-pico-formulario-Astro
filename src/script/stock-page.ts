@@ -6,11 +6,18 @@ const categoria = document.getElementById('categoria') as HTMLSelectElement;
 const buscar = document.getElementById('buscar') as HTMLButtonElement;
 const resultado = document.getElementById('resultado') as HTMLDivElement;
 
+
 buscar.addEventListener('click', async () => {
 
   resultado.innerHTML = '<p>Cargando...</p>';
 
   const data = await getResumen(fecha.value,local.value,categoria.value)
+  
+   
+  console.log("data ej:",data);
+  
+
+  
 
   resultado.innerHTML = '';
 
